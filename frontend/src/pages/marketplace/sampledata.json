@@ -1,0 +1,80 @@
+[
+  {
+    "user": "64ab123f7891a23b45678abc",
+    "productName": "Canon EOS R5 Mirrorless Camera",
+    "category": "Cameras & Equipment",
+    "subcategory": ["Mirrorless Cameras", "Lenses"],
+    "description": "Lightly used Canon EOS R5 with a 24-105mm f/4L IS USM lens. Perfect for both video and photography. 8K video recording capabilities and amazing autofocus.",
+    "bought_on": "2023-06-10T00:00:00.000Z",
+    "price": 3200,
+    "isNegotiable": true,
+    "isSold": false,
+    "location": "Los Angeles, CA",
+    "tags": ["Canon", "Mirrorless", "Video", "Photography"],
+    "warranty": true,
+    "imgs": [
+      "https://example.com/images/canon_eos_r5_1.jpg",
+      "https://example.com/images/canon_eos_r5_2.jpg"
+    ],
+    "interests": [],
+    "comments": [
+      {
+        "text": "Is the lens included in the price?",
+        "user": "64dc567f7891b34c5678defg"
+      }
+    ]
+  },
+  {
+    "user": "64de567f7891b23a45678def",
+    "productName": "Aputure 300D II LED Light Kit",
+    "category": "Lighting Equipment",
+    "subcategory": ["LED Lights", "Light Stands"],
+    "description": "Selling a barely used Aputure 300D II with softbox and light stand. Fantastic light output and color accuracy, great for film and studio shoots.",
+    "bought_on": "2022-12-15T00:00:00.000Z",
+    "price": 900,
+    "isNegotiable": false,
+    "isSold": false,
+    "location": "New York, NY",
+    "tags": ["Aputure", "LED", "Studio", "Film"],
+    "warranty": false,
+    "imgs": [
+      "https://example.com/images/aputure_300d_1.jpg",
+      "https://example.com/images/aputure_300d_2.jpg"
+    ],
+    "interests": [
+      "64ef789f7891c12d5678ghij"
+    ],
+    "comments": [
+      {
+        "text": "Can you ship it to Chicago?",
+        "user": "64ef789f7891d12f5678ijkl"
+      }
+    ]
+  },
+  {
+    "user": "64ab987f7891e12c34567mno",
+    "productName": "Zoom H6 Handy Recorder",
+    "category": "Audio Gear",
+    "subcategory": ["Portable Recorders", "Microphones"],
+    "description": "Zoom H6 audio recorder in excellent condition with multiple microphone capsules. Perfect for capturing high-quality sound for films, interviews, and podcasts.",
+    "bought_on": "2021-09-05T00:00:00.000Z",
+    "price": 300,
+    "isNegotiable": true,
+    "isSold": false,
+    "location": "Austin, TX",
+    "tags": ["Zoom", "Audio", "Podcast", "Film"],
+    "warranty": false,
+    "imgs": [
+      "https://example.com/images/zoom_h6_1.jpg"
+    ],
+    "interests": [],
+    "comments": [
+      {
+        "text": "Does it come with any accessories?",
+        "user": "64abc1237891a45d6789qrst"
+      }
+    ]
+  }
+    
+  
+]
