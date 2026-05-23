@@ -1,0 +1,5 @@
+dual-script.sh
+*.tfstate
+*.tfstate.*
+.terraform
+.terraform.lock.hcl
