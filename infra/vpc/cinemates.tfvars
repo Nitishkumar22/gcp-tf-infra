@@ -1,3 +1,3 @@
-project_id = "cinemates-497209"
+project_id   = "cinemates-497209"
 project_name = "cinemates"
-region = "us-east1"
+region       = "us-east1"
