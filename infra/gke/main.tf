@@ -86,4 +86,17 @@ resource "google_container_node_pool" "gke_node_pool" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
+
+  # Ignore version changes so Terraform doesn't perpetually try to revert the 
+  # exact patch version (1.33.11) back to the short version (1.33).
+  # Ignore node_config.resource_labels because GKE auto-injects internal GCP
+  # resource labels (e.g. goog-gke-node-pool-provisioning-model=spot for
+  # preemptible nodes) that are not in our config, causing a perpetual
+  # in-place update diff on every apply.
+  lifecycle {
+    ignore_changes = [
+      version,
+      node_config[0].resource_labels,
+    ]
+  }
 }
