@@ -19,10 +19,13 @@ variable "gke_version" {
   default     = "1.33"
 }
 
-variable "node_count" {
-  description = "Number of nodes in the node pool"
-  type        = number
-  default     = 1
+variable "node_pools" {
+  description = "Map of node pool configurations"
+  type = map(object({
+    node_count   = number
+    machine_type = string
+    preemptible  = bool
+  }))
 }
 
 variable "environment" {

@@ -61,20 +61,21 @@ resource "google_project_iam_member" "gke_sa_roles" {
 
 # Node pool
 # url: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool
-# resource "google_container_node_pool" "gke_node_pool" {
-#   name       = "${var.project_name}-gke-node-pool"
-#   cluster    = google_container_cluster.gke_cluster.id
-#   node_count = var.node_count
-#   version    = var.gke_version
+resource "google_container_node_pool" "gke_node_pool" {
+  for_each = var.node_pools
+  name       = "${var.project_name}-${each.key}"
+  cluster    = google_container_cluster.gke_cluster.id
+  node_count = each.value.node_count
+  version    = var.gke_version
 
-#   node_config {
-#     preemptible  = true
-#     machine_type = "e2-medium"
+  node_config {
+    preemptible     = each.value.preemptible
+    machine_type    = each.value.machine_type
+    labels          = local.all_labels
+    service_account = google_service_account.gke_sa.email
 
-#     labels = local.all_labels
-
-#     oauth_scopes = [
-#       "https://www.googleapis.com/auth/cloud-platform"
-#     ]
-#   }
-# }
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}
