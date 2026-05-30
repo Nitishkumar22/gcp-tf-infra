@@ -9,8 +9,15 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "region of the project"
+  description = "GCP Region"
   type        = string
+  default     = "us-east1"
+}
+
+variable "zone" {
+  description = "GCP Zone for the zonal cluster"
+  type        = string
+  default     = "us-east1-b"
 }
 
 variable "gke_version" {
@@ -25,6 +32,8 @@ variable "node_pools" {
     node_count   = number
     machine_type = string
     preemptible  = bool
+    disk_size_gb = number
+    disk_type    = string
   }))
 }
 

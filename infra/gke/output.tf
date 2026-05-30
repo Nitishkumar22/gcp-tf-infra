@@ -33,11 +33,11 @@ output "kubeconfig" {
     cluster_endpoint       = google_container_cluster.gke_cluster.endpoint
     cluster_ca_certificate = google_container_cluster.gke_cluster.master_auth[0].cluster_ca_certificate
     project_id             = var.project_id
-    region                 = var.region
+    zone                   = var.zone
   })
 }
 
 output "kubectl_command" {
   description = "Command to configure kubectl"
-  value       = "gcloud container clusters get-credentials ${google_container_cluster.gke_cluster.name} --region=${var.region} --project=${var.project_id}"
+  value       = "gcloud container clusters get-credentials ${google_container_cluster.gke_cluster.name} --zone=${var.zone} --project=${var.project_id}"
 }

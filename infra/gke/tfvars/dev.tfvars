@@ -1,6 +1,7 @@
 project_id   = "cinemates-497209"
 project_name = "cinemates"
 region       = "us-east1"
+zone         = "us-east1-b"
 gke_version  = "1.33"
 environment  = "dev"
 
@@ -10,6 +11,8 @@ node_pools = {
     node_count   = 1
     machine_type = "e2-medium"
     preemptible  = true
+    disk_size_gb = 50
+    disk_type    = "pd-standard"
   }
 }
 

@@ -12,7 +12,7 @@ data "terraform_remote_state" "vpc" {
 # url: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
 resource "google_container_cluster" "gke_cluster" {
   name     = "${var.project_name}-${var.environment}"
-  location = var.region
+  location = var.zone
   project  = var.project_id
 
   min_master_version       = var.gke_version
@@ -71,6 +71,8 @@ resource "google_container_node_pool" "gke_node_pool" {
   node_config {
     preemptible     = each.value.preemptible
     machine_type    = each.value.machine_type
+    disk_size_gb    = each.value.disk_size_gb
+    disk_type       = each.value.disk_type
     labels          = local.all_labels
     service_account = google_service_account.gke_sa.email
 
