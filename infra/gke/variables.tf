@@ -13,11 +13,6 @@ variable "region" {
   type        = string
 }
 
-variable "name" {
-  description = "name of the resource"
-  type        = string
-}
-
 variable "gke_version" {
   description = "Kubernetes version for GKE cluster"
   type        = string

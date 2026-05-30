@@ -20,10 +20,10 @@ output "cluster_location" {
   value       = google_container_cluster.gke_cluster.location
 }
 
-output "node_pool_name" {
-  description = "The name of the GKE node pool"
-  value       = google_container_node_pool.gke_node_pool.name
-}
+# output "node_pool_name" {
+#   description = "The name of the GKE node pool"
+#   value       = google_container_node_pool.gke_node_pool.name
+# }
 
 output "kubeconfig" {
   description = "Kubeconfig for kubectl access"

@@ -8,30 +8,21 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-# Locals for common labels/tags
-locals {
-  common_labels = {
-    project     = var.project_name
-    environment = var.environment
-    region      = var.region
-    managed-by  = "terraform"
-    component   = "gke"
-  }
-  
-  # Merge common labels with custom labels (custom labels override common if duplicate)
-  all_labels = merge(local.common_labels, var.labels)
-}
-
 # GKE cluster (Standard mode with manual node pool management)
 # url: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster
 resource "google_container_cluster" "gke_cluster" {
-  name     = "${var.name}-gke-cluster"
+  name     = "${var.project_name}-${var.environment}"
   location = var.region
   project  = var.project_id
-  
+
   min_master_version       = var.gke_version
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  node_config {
+    disk_type    = "pd-standard"
+    disk_size_gb = 50
+  }
 
   network    = data.terraform_remote_state.vpc.outputs.vpc_network_id
   subnetwork = data.terraform_remote_state.vpc.outputs.gke_subnet_id
@@ -46,22 +37,44 @@ resource "google_container_cluster" "gke_cluster" {
   deletion_protection = false
 }
 
+# GKE Service Account
+resource "google_service_account" "gke_sa" {
+  account_id   = "${var.project_name}-${var.environment}-sa"
+  display_name = "Service Account for GKE nodes"
+  project      = var.project_id
+}
+
+# Grant necessary minimum roles to the GKE Service Account
+resource "google_project_iam_member" "gke_sa_roles" {
+  for_each = toset([
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/monitoring.viewer",
+    "roles/stackdriver.resourceMetadata.writer",
+    "roles/artifactregistry.reader" # Optional, but highly recommended if using GCP Artifact Registry
+  ])
+
+  project = var.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.gke_sa.email}"
+}
+
 # Node pool
 # url: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool
-resource "google_container_node_pool" "gke_node_pool" {
-  name       = "${var.name}-gke-node-pool"
-  cluster    = google_container_cluster.gke_cluster.id
-  node_count = var.node_count
-  version    = var.gke_version
+# resource "google_container_node_pool" "gke_node_pool" {
+#   name       = "${var.project_name}-gke-node-pool"
+#   cluster    = google_container_cluster.gke_cluster.id
+#   node_count = var.node_count
+#   version    = var.gke_version
 
-  node_config {
-    preemptible  = true
-    machine_type = "e2-medium"
-    
-    labels = local.all_labels
+#   node_config {
+#     preemptible  = true
+#     machine_type = "e2-medium"
 
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
-  }
-}
+#     labels = local.all_labels
+
+#     oauth_scopes = [
+#       "https://www.googleapis.com/auth/cloud-platform"
+#     ]
+#   }
+# }
