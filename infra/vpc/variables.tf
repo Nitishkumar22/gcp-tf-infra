@@ -12,3 +12,8 @@ variable "region" {
   description = "region of the project"
   type        = string
 }
+
+variable "name" {
+  description = "name of the resource"
+  type        = string
+}

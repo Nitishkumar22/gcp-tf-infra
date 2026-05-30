@@ -3,3 +3,4 @@ dual-script.sh
 *.tfstate.*
 .terraform
 .terraform.lock.hcl
+GCP-SETUP.MD

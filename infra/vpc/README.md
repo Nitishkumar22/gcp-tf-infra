@@ -10,6 +10,7 @@ This directory contains the Terraform modules to provision the foundational netw
 
 ## Usage
 ```bash
+terraform workspace select <workspace_name> # dev or prod
 terraform init
 terraform plan
 terraform apply
