@@ -32,14 +32,4 @@ variable "repositories" {
     description = string
     format      = string
   }))
-  default = {
-    backend = {
-      description = "Docker images for backend services"
-      format      = "DOCKER"
-    }
-    frontend = {
-      description = "Docker images for frontend applications"
-      format      = "DOCKER"
-    }
-  }
 }
