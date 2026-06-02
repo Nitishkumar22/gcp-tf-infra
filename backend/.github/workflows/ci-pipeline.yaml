@@ -1,0 +1,54 @@
+name: CI Pipeline for Backend
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+# url: https://github.com/marketplace/actions/push-to-gcr-github-action
+#  Build and push Docker image to Artifact Registry
+jobs:
+  build-and-push-to-gcr:
+    runs-on: ubuntu-latest
+
+    outputs:
+      image_tag: ${{ steps.set-image-tag.outputs.image_tag }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/361896675174/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
+          service_account: github-actions-sa@cinemates-497209.iam.gserviceaccount.com
+
+      # Extract metadata for the Docker image tags
+      - name: Extract metadata
+        id: vars
+        run: |
+          BRANCH_NAME=$(echo "${GITHUB_REF##*/}" | tr '/' '-')
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-8)
+          IMAGE_TAG="${BRANCH_NAME}-${SHORT_SHA}"
+
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
+
+      - uses: RafikFarhad/push-to-gcr-github-action@v5
+        with:
+          registry: us-east1-docker.pkg.dev
+          project_id: cinemates-497209
+          image_name: cinemates-backend/backend
+          image_tag: latest,${{ steps.vars.outputs.tag }}
+          dockerfile: Dockerfile
+          context: .
+
+    
