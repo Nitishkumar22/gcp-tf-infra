@@ -3,10 +3,11 @@ name: CI Pipeline for Backend
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
+  workflow_dispatch:
 
 # url: https://github.com/marketplace/actions/push-to-gcr-github-action
 #  Build and push Docker image to Artifact Registry
