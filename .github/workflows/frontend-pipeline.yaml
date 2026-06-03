@@ -1,12 +1,16 @@
-name: CI Pipeline for Backend
+name: CI Pipeline for Frontend
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'frontend/**'
+    # branches:
+    #   - main
   pull_request:
-    branches:
-      - main
+    paths:
+      - 'frontend/**'
+    # branches:
+    #   - main
   workflow_dispatch:
 
 # url: https://github.com/marketplace/actions/push-to-gcr-github-action
@@ -40,14 +44,11 @@ jobs:
           echo "sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
           echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
-
       - uses: RafikFarhad/push-to-gcr-github-action@v5
         with:
           registry: us-east1-docker.pkg.dev
           project_id: cinemates-497209
-          image_name: cinemates-backend/backend
+          image_name: cinemates-frontend/frontend
           image_tag: latest,${{ steps.vars.outputs.tag }}
           dockerfile: Dockerfile
           context: .
