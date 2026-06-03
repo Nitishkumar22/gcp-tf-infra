@@ -4,13 +4,13 @@ on:
   push:
     paths:
       - 'backend/**'
-    # branches:
-    #   - main
+    branches:
+      - main
   pull_request:
     paths:
       - 'backend/**'
-    # branches:
-    #   - main
+    branches:
+      - main
   workflow_dispatch:
 
 # url: https://github.com/marketplace/actions/push-to-gcr-github-action
