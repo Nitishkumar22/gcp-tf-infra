@@ -1,0 +1,14 @@
+# Build context is the repo root (pipelines use `context: .`),
+# so this applies to both the backend and frontend image builds.
+**/node_modules
+**/dist
+**/build
+**/.git
+**/.github
+**/.env
+**/.env.*
+**/npm-debug.log*
+**/.DS_Store
+**/Dockerfile
+**/.dockerignore
+infra

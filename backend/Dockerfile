@@ -1,20 +1,22 @@
-# Use Node.js 18 as the base image
-FROM node:18-slim
+# Backend — Express API
+FROM node:18-alpine
 
-# Set the working directory in the container
+ENV NODE_ENV=production
+# Default to the same port used in development. The .env file is not baked into
+# the image (it's .dockerignore'd), so set PORT here; k8s/runtime can override it.
+ENV PORT=8000
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Install production dependencies only, from the lockfile (reproducible builds)
 COPY backend/package*.json ./
+RUN npm ci --omit=dev
 
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
+# Copy application source
 COPY backend/ .
 
-# Expose the port the app runs on
-EXPOSE 3000
+# Drop privileges — node:alpine ships a non-root "node" user
+USER node
 
-# Command to run the application
-CMD ["npm", "start"]
+# index.js listens on process.env.PORT (set above to 8000)
+EXPOSE 8000
+CMD ["node", "index.js"]
