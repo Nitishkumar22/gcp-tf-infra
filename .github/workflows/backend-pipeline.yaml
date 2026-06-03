@@ -53,7 +53,7 @@ jobs:
           project_id: cinemates-497209
           image_name: cinemates-backend/backend
           image_tag: latest,${{ steps.vars.outputs.tag }}
-          dockerfile: Dockerfile
+          dockerfile: backend/Dockerfile
           context: .
 
     

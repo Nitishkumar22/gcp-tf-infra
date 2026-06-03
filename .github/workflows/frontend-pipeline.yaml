@@ -50,7 +50,7 @@ jobs:
           project_id: cinemates-497209
           image_name: cinemates-frontend/frontend
           image_tag: latest,${{ steps.vars.outputs.tag }}
-          dockerfile: Dockerfile
+          dockerfile: frontend/Dockerfile
           context: .
 
     
