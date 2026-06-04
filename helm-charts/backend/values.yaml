@@ -1,20 +1,15 @@
 replicaCount: 1
-
 image:
   repository: us-east1-docker.pkg.dev/cinemates-497209/cinemates-backend/backend
   pullPolicy: IfNotPresent
   # Defaults to .Chart.AppVersion when left empty.
-  tag: "latest"
-
+  tag: "main-9a279387-9"
 nameOverride: ""
 fullnameOverride: ""
-
 containerPorts:
   - name: http
     containerPort: 8000
     protocol: TCP
-
-
 # The backend exposes no "/" route, so health is checked at the TCP layer.
 livenessProbe:
   tcpSocket:
@@ -22,7 +17,6 @@ livenessProbe:
 readinessProbe:
   tcpSocket:
     port: http
-
 service:
   type: ClusterIP
   ports:
