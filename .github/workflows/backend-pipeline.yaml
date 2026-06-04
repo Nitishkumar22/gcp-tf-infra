@@ -3,20 +3,25 @@ name: CI Pipeline for Backend
 on:
   push:
     paths:
-      - 'backend/**'
-      - '.github/workflows/**'
-      - 'helm-charts/**'
+      - "backend/**"
+      - ".github/workflows/**"
+      - "helm-charts/**"
     branches:
       - main
   pull_request:
     paths:
-      - 'backend/**'
-      - '.github/workflows/**'
-      - 'helm-charts/**'
+      - "backend/**"
+      - ".github/workflows/**"
+      - "helm-charts/**"
     branches:
       - main
   workflow_dispatch:
 
+env:
+  GCP_PROJECT_ID: cinemates-497209
+  REGISTRY: us-east1-docker.pkg.dev
+  IMAGE_NAME: cinemates-backend/backend
+  HELM_VALUES_FILE: helm-charts/backend/values.yaml
 
 # url: https://github.com/marketplace/actions/push-to-gcr-github-action
 #  Build and push Docker image to Artifact Registry
@@ -54,13 +59,13 @@ jobs:
           echo "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
       - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker us-east1-docker.pkg.dev --quiet
+        run: gcloud auth configure-docker ${{ env.REGISTRY }} --quiet
 
       - uses: RafikFarhad/push-to-gcr-github-action@v5
         with:
-          registry: us-east1-docker.pkg.dev
-          project_id: cinemates-497209
-          image_name: cinemates-backend/backend
+          registry: ${{ env.REGISTRY }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          image_name: ${{ env.IMAGE_NAME }}
           image_tag: latest,${{ steps.vars.outputs.tag }}
           dockerfile: backend/Dockerfile
           context: .
@@ -69,4 +74,61 @@ jobs:
         id: set-image-tag
         run: echo "image_tag=${{ steps.vars.outputs.tag }}" >> $GITHUB_OUTPUT
 
-    
+  # Update Helm values file with new image tag (GitOps approach)
+  update-helm-values:
+    runs-on: ubuntu-latest
+    needs: build-and-push-to-gcr
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+      - name: Update Helm values file
+        run: |
+          TAG="${{ needs.build-and-push-to-gcr.outputs.image_tag }}"
+          VALUES_FILE="${{ env.HELM_VALUES_FILE }}"
+
+          echo "Updating image tag to: $TAG"
+          yq e '.image.tag = "'"$TAG"'"' -i $VALUES_FILE
+
+          echo "Updated values.yaml:"
+          cat $VALUES_FILE
+
+      - name: Commit and push changes
+        run: |
+          TAG="${{ needs.build-and-push-to-gcr.outputs.image_tag }}"
+          VALUES_FILE="${{ env.HELM_VALUES_FILE }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add $VALUES_FILE
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "chore: update backend image tag to $TAG [skip ci]"
+
+          # Retry logic for push
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "Successfully pushed changes"
+              exit 0
+            fi
+            echo "Push failed, retrying in 5 seconds... (attempt $i/5)"
+            sleep 5
+          done
+
+          echo "Failed to push after 5 attempts"
+          exit 1
