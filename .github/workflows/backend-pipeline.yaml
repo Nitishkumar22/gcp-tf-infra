@@ -23,6 +23,7 @@ on:
 jobs:
   build-and-push-to-gcr:
     runs-on: ubuntu-latest
+    environment: dev
     permissions:
       contents: read
       id-token: write
