@@ -4,11 +4,15 @@ on:
   push:
     paths:
       - 'backend/**'
+      - '.github/workflows/**'
+      - 'helm-charts/**'
     branches:
       - main
   pull_request:
     paths:
       - 'backend/**'
+      - '.github/workflows/**'
+      - 'helm-charts/**'
     branches:
       - main
   workflow_dispatch:
