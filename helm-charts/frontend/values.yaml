@@ -1,19 +1,15 @@
 replicaCount: 1
-
 image:
   repository: us-east1-docker.pkg.dev/cinemates-497209/cinemates-frontend/frontend
   pullPolicy: IfNotPresent
   # Defaults to .Chart.AppVersion when left empty.
-  tag: "latest"
-
+  tag: "main-9a279387-9"
 nameOverride: ""
 fullnameOverride: ""
-
 containerPorts:
   - name: http
     containerPort: 80
     protocol: TCP
-
 # nginx serves index.html at "/",  an HTTP probe is appropriate here.
 livenessProbe:
   httpGet:
@@ -23,7 +19,6 @@ readinessProbe:
   httpGet:
     path: /
     port: http
-
 service:
   type: ClusterIP
   ports:
