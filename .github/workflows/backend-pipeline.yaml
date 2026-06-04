@@ -18,11 +18,6 @@ on:
   workflow_dispatch:
 
 
-env:
-  DATABASE_URL: ${{ secrets.DB_URL }}
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  API_KEY: ${{ secrets.API_KEY }}
-
 # url: https://github.com/marketplace/actions/push-to-gcr-github-action
 #  Build and push Docker image to Artifact Registry
 jobs:
@@ -68,5 +63,9 @@ jobs:
           image_tag: latest,${{ steps.vars.outputs.tag }}
           dockerfile: backend/Dockerfile
           context: .
+
+      - name: Set image tag output
+        id: set-image-tag
+        run: echo "image_tag=${{ steps.vars.outputs.tag }}" >> $GITHUB_OUTPUT
 
     

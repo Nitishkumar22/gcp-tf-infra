@@ -60,4 +60,7 @@ jobs:
           dockerfile: frontend/Dockerfile
           context: .
 
-    
+      - name: Set image tag output
+        id: set-image-tag
+        run: echo "image_tag=${{ steps.vars.outputs.tag }}" >> $GITHUB_OUTPUT
+  
