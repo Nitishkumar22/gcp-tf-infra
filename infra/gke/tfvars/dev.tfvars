@@ -8,7 +8,7 @@ environment  = "dev"
 
 node_pools = {
   "nodepool-1" = {
-    node_count   = 1
+    node_count   = 2
     machine_type = "e2-medium"
     preemptible  = true
     disk_size_gb = 50
