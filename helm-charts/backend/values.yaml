@@ -29,3 +29,7 @@ route:
   parentRef:
     name: cinemates-gateway
     namespace: default
+
+envFrom:
+  - secretRef:
+      name: backend-env
