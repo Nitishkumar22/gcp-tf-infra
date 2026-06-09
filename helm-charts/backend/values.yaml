@@ -15,7 +15,8 @@ livenessProbe:
   tcpSocket:
     port: http
 readinessProbe:
-  tcpSocket:
+  httpGet:
+    path: /
     port: http
 service:
   type: ClusterIP

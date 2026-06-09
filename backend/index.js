@@ -42,6 +42,11 @@ app.use(bodyParser.json({ limit: '20mb' }));
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 
+// Health check endpoint for GCP Load Balancer
+app.get('/', (req, res) => {
+    res.status(200).send('OK');
+});
+
 app.use('/api/auth', require("./routes/authRoutes"));
 app.use('/api/users', require("./routes/userRoutes"));
 app.use('/api/posts', require("./routes/postRoutes"));
