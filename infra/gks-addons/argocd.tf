@@ -82,3 +82,12 @@ output "argocd_root_app" {
   description = "Root application for app-of-apps pattern"
   value       = "root-app deployed in argocd namespace"
 }
+
+# Deploy HTTPRoute to expose ArgoCD UI on the Gateway Load Balancer
+resource "kubectl_manifest" "argocd_httproute" {
+  yaml_body = file("${path.module}/charts/argocd/httproute.yaml")
+
+  depends_on = [
+    helm_release.argocd
+  ]
+}

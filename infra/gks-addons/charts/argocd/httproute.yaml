@@ -1,0 +1,15 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: argocd-route
+  namespace: argocd
+spec:
+  parentRefs:
+  - name: cinemates-gateway
+    namespace: default
+  hostnames:
+  - "argocd.34.49.38.142.nip.io"
+  rules:
+  - backendRefs:
+    - name: argocd-server
+      port: 80
