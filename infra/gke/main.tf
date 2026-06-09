@@ -31,6 +31,34 @@ resource "google_container_cluster" "gke_cluster" {
     channel = "CHANNEL_STANDARD"
   }
 
+  cluster_autoscaling {
+    enabled = true
+
+    resource_limits {
+      resource_type = "cpu"
+      minimum       = 1
+      maximum       = 50
+    }
+    
+    resource_limits {
+      resource_type = "memory"
+      minimum       = 4
+      maximum       = 128
+    }
+
+    auto_provisioning_defaults {
+      service_account = google_service_account.gke_sa.email
+      oauth_scopes = [
+        "https://www.googleapis.com/auth/cloud-platform"
+      ]
+      management {
+        auto_repair  = true
+        auto_upgrade = true
+      }
+    }
+  }
+
+
   ip_allocation_policy {
     cluster_secondary_range_name  = "pods"
     services_secondary_range_name = "services"
