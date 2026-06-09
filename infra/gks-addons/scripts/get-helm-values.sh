@@ -6,10 +6,10 @@
 # Instructions: Change the values below and run the script
 
 # CHART CONFIGURATION - CHANGE THESE VALUES
-CHART_NAME="argo-cd"
-REPO_URL="https://argoproj.github.io/argo-helm"
-VERSION="7.7.12"
-OUTPUT_FILE="charts/argocd/value.yaml"
+CHART_NAME="keda"
+REPO_URL="https://kedacore.github.io/charts"
+VERSION="2.20.0"
+OUTPUT_FILE="../charts/keda/value.yaml"
 
 # ============================================
 # Script execution (no need to change below)
