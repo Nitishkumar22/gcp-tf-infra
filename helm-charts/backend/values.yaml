@@ -3,7 +3,7 @@ image:
   repository: us-east1-docker.pkg.dev/cinemates-497209/cinemates-backend/backend
   pullPolicy: IfNotPresent
   # Defaults to .Chart.AppVersion when left empty.
-  tag: "main-9a279387-9"
+  tag: "main-2892e8ef-11"
 nameOverride: ""
 fullnameOverride: ""
 containerPorts:
@@ -24,7 +24,6 @@ service:
       port: 80
       targetPort: http
       protocol: TCP
-
 route:
   enabled: true
   parentRef:
