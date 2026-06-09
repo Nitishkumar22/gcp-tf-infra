@@ -1,6 +1,34 @@
 # ArgoCD Deployment using Helm
 # This deploys ArgoCD to the GKE cluster for GitOps-based application delivery
 
+# Fetch GitHub PAT from Google Secret Manager
+data "google_secret_manager_secret_version" "github_pat" {
+  secret  = "GITHUB_PAT_ARGOCD_TOKEN"
+  project = var.project_id
+}
+
+# Create Kubernetes secret for GitHub repository credentials
+resource "kubernetes_secret" "argocd_repo_creds" {
+  metadata {
+    name      = "github-repo-creds"
+    namespace = "argocd"
+    labels = {
+      "argocd.argoproj.io/secret-type" = "repository"
+    }
+  }
+
+  data = {
+    type     = "git"
+    url      = "https://github.com/tenex-ai/gcp-tf-infra.git"
+    password = data.google_secret_manager_secret_version.github_pat.secret_data
+    username = "not-used"
+  }
+
+  depends_on = [
+    helm_release.argocd
+  ]
+}
+
 resource "helm_release" "argocd" {
   name             = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
@@ -39,4 +67,18 @@ output "argocd_admin_password_command" {
 output "argocd_port_forward_command" {
   description = "Command to access ArgoCD UI via port-forward"
   value       = "kubectl port-forward svc/argocd-server -n argocd 8080:443"
+}
+
+# Deploy Root Application (App of Apps pattern)
+resource "kubectl_manifest" "argocd_root_app" {
+  yaml_body = file("${path.module}/charts/argo-root-app/root-app.yaml")
+
+  depends_on = [
+    helm_release.argocd
+  ]
+}
+
+output "argocd_root_app" {
+  description = "Root application for app-of-apps pattern"
+  value       = "root-app deployed in argocd namespace"
 }
