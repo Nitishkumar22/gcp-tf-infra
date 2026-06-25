@@ -1,0 +1,7 @@
+fullnameOverride: "clickhouse-operator"
+certManger:
+  enabled: false
+webhook:
+  enabled: false
+metrics:
+  enabled: false
