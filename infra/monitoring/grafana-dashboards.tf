@@ -10,6 +10,10 @@ resource "grafana_folder" "folders" {
 locals {
   dashboard_configs = {
     "gke_cluster_overview.json" = { folder = "Kubernetes" }
+    "pod_detail.json"           = { folder = "Kubernetes" }
+    "node_detail.json"          = { folder = "Kubernetes" }
+    "loki_log_explorer.json"    = { folder = "Logs" }
+    "error_rate_logs.json"      = { folder = "Logs" }
     # next dashboard just add one line here
   }
 }
