@@ -1,19 +1,51 @@
 # https://clickhouse.com/docs/clickhouse-operator/guides/configuration
+# https://clickhouse.com/docs/integrations/gcs#gcs-multi-region
 
 clickhouse:
   metadata:
     name: clickhouse
   spec:
     externalSecret:
-      name: "clickhouse-secrets"
+      name: "clickhouse-secrets"  # validated by the operator before it reconciles the actual server pod
     settings:
       defaultUserPassword:
         secret:
           key: "CLICKHOUSE_PASSWORD"
           name: "clickhouse-secrets"
+      # MergeTree data lives in GCS, not the PVC below — see infra/gcs for the bucket/HMAC key.
+      extraConfig:
+        storage_configuration:
+          disks:
+            gcs:
+              type: s3  # ClickHouse has no native "gcs" disk; it talks to GCS via its S3-compatible endpoint
+              endpoint: "https://storage.googleapis.com/cinemates-clickhouse-data/clickhouse/"
+              access_key_id:
+                "@from_env": "GCS_HMAC_ACCESS_ID"  # pulled from env, not hardcoded in plaintext
+              secret_access_key:
+                "@from_env": "GCS_HMAC_SECRET"
+              metadata_path: "/var/lib/clickhouse/disks/gcs/"  # local mapping of metadata -> GCS objects
+          policies:
+            gcs_policy:
+              volumes:
+                main:
+                  disk: gcs
+        merge_tree:
+          storage_policy: "gcs_policy"  # default storage policy for every MergeTree table
     replicas: 1
     shards: 1
     containerTemplate:
+      env:
+        # HMAC creds backing the @from_env refs above
+        - name: GCS_HMAC_ACCESS_ID
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse-secrets
+              key: gcs-hmac-access-id
+        - name: GCS_HMAC_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse-secrets
+              key: gcs-hmac-secret
       resources:
         requests:
           memory: "512Mi"
@@ -21,7 +53,7 @@ clickhouse:
         limits:
           memory: "1Gi"
           cpu: "500m"
-    dataVolumeClaimSpec:
+    dataVolumeClaimSpec:  # now only backs local disk metadata/system tables, not table data
       storageClassName: "standard-rwo"
       accessModes:
       - "ReadWriteOnce"
@@ -29,14 +61,14 @@ clickhouse:
         requests:
           storage: "2Gi"
     podTemplate:
-      topologySpreadConstraints:
+      topologySpreadConstraints:  # spreads replicas across zones for AZ-failure resilience
       - maxSkew: 1
         topologyKey: "topology.kubernetes.io/zone"
         whenUnsatisfiable: "DoNotSchedule"
         labelSelector:
           matchLabels:
             app: "clickhouse"
-keeper:
+keeper:  # ClickHouse Keeper cluster (ZooKeeper replacement); coordinates metadata, not table data
   metadata:
     name: "keeper"
   spec:
@@ -50,7 +82,7 @@ keeper:
         limits:
           memory: "256Mi"
           cpu: "200m"
-    dataVolumeClaimSpec:
+    dataVolumeClaimSpec:  # Keeper always needs local persistent storage, unaffected by the GCS change above
       storageClassName: "standard-rwo"
       accessModes:
       - "ReadWriteOnce"
