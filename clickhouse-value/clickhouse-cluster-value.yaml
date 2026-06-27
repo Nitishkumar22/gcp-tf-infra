@@ -13,8 +13,6 @@ clickhouse:
           name: "clickhouse-secrets"
     replicas: 1
     shards: 1
-    keeperClusterRef:
-      name: "keeper"
     containerTemplate:
       resources:
         requests:
