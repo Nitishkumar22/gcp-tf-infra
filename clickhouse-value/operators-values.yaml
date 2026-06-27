@@ -1,5 +1,5 @@
 fullnameOverride: "clickhouse-operator"
-certManger:
+certManager:
   enabled: false
 webhook:
   enabled: false

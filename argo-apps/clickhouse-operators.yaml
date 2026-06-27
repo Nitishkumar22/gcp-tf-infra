@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   sources:
-  - repoURL: "ghrc.io/clickhouse"
+  - repoURL: "ghcr.io/clickhouse"
     chart: "clickhouse-operator-helm"
     targetRevision: "0.0.6"
     helm:
