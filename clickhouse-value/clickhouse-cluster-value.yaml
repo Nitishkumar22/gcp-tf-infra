@@ -1,7 +1,8 @@
+# https://clickhouse.com/docs/clickhouse-operator/guides/configuration
+
 clickhouse:
-  meta:
-    # CR name. Defaults to the Helm release name when empty.
-    name: "clickhouse"
+  metadata:
+    name: clickhouse
   spec:
     externalSecret:
       name: "clickhouse-secrets"
@@ -12,6 +13,8 @@ clickhouse:
           name: "clickhouse-secrets"
     replicas: 1
     shards: 1
+    keeperClusterRef:
+      name: "keeper"
     containerTemplate:
       resources:
         requests:
@@ -36,8 +39,7 @@ clickhouse:
           matchLabels:
             app: "clickhouse"
 keeper:
-  meta:
-    # CR name. Defaults to the Helm release name when empty.
+  metadata:
     name: "keeper"
   spec:
     replicas: 1
