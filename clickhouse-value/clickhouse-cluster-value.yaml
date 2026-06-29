@@ -54,10 +54,15 @@ clickhouse:
       # startup to finish reloading local system-table parts; operator was killing the
       # container mid-load and causing a restart loop.
       livenessProbe:
+        tcpSocket:
+          port: 9000
         initialDelaySeconds: 60
         periodSeconds: 10
         failureThreshold: 30
       readinessProbe:
+        httpGet:
+          path: "/ping"
+          port: 9009
         initialDelaySeconds: 30
         periodSeconds: 5
         failureThreshold: 30
