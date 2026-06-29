@@ -1,32 +1,32 @@
-apiVersion: "argoproj.io/v1alpha1"
-kind: "Application"
-metadata:
-  namespace: "argocd"
-  name: "clickhouse-dev"
-  labels:
-    app.kubernetes.io/name: "clickhouse-dev"
-  finalizers:
-  - "resources-finalizer.argocd.argoproj.io/background"
-spec:
-  destination:
-    namespace: "clickhouse"
-    server: https://kubernetes.default.svc
-  project: "default"
-  sources:
-  - repoURL: "ghcr.io/clickhouse"
-    chart: "clickhouse-cluster-helm"
-    targetRevision: "0.0.6"
-    helm:
-      valueFiles:
-      - "$valueSource/clickhouse-value/clickhouse-cluster-value.yaml"
-  - repoURL: "https://github.com/tenex-ai/gcp-tf-infra.git"
-    targetRevision: "clickhouse"
-    ref: "valueSource"
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-    - "CreateNamespace=true"
-    - "ApplyOutOfSyncOnly=true"
-    - "ServerSideApply=true"
+# apiVersion: "argoproj.io/v1alpha1"
+# kind: "Application"
+# metadata:
+#   namespace: "argocd"
+#   name: "clickhouse-dev"
+#   labels:
+#     app.kubernetes.io/name: "clickhouse-dev"
+#   finalizers:
+#   - "resources-finalizer.argocd.argoproj.io/background"
+# spec:
+#   destination:
+#     namespace: "clickhouse"
+#     server: https://kubernetes.default.svc
+#   project: "default"
+#   sources:
+#   - repoURL: "ghcr.io/clickhouse"
+#     chart: "clickhouse-cluster-helm"
+#     targetRevision: "0.0.6"
+#     helm:
+#       valueFiles:
+#       - "$valueSource/clickhouse-value/clickhouse-cluster-value.yaml"
+#   - repoURL: "https://github.com/tenex-ai/gcp-tf-infra.git"
+#     targetRevision: "clickhouse"
+#     ref: "valueSource"
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#     - "CreateNamespace=true"
+#     - "ApplyOutOfSyncOnly=true"
+#     - "ServerSideApply=true"
