@@ -87,7 +87,36 @@ keeper:  # ClickHouse Keeper cluster (ZooKeeper replacement); coordinates metada
   spec:
     replicas: 1
     clusterDomain: "cluster.local"
+    settings:
+      extraConfig:
+        storage_configuration:
+          disks:
+            gcs:
+              type: s3  # see clickhouse.spec.settings.extraConfig comment above re: GCS via S3-compatible endpoint
+              endpoint: "https://storage.googleapis.com/cinemates-clickhouse-data/keeper/"
+              access_key_id:
+                "@from_env": "GCS_HMAC_ACCESS_ID"
+              secret_access_key:
+                "@from_env": "GCS_HMAC_SECRET"
+              metadata_path: "/var/lib/clickhouse/disks/gcs/"
+        keeper_server:
+          # Only snapshots go to GCS: log_storage_disk/state_storage_disk stay on the local
+          # PVC disk (the default) since Keeper's write-ahead log relies on force_sync, which
+          # only `local` disks support reliably.
+          snapshot_storage_disk: "gcs"
     containerTemplate:
+      env:
+        # HMAC creds backing the @from_env refs above
+        - name: GCS_HMAC_ACCESS_ID
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse-secrets
+              key: gcs-hmac-access-id
+        - name: GCS_HMAC_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse-secrets
+              key: gcs-hmac-secret
       resources:
         requests:
           memory: "128Mi"
