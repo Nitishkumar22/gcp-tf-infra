@@ -100,6 +100,11 @@ keeper:  # ClickHouse Keeper cluster (ZooKeeper replacement); coordinates metada
                 "@from_env": "GCS_HMAC_SECRET"
               metadata_path: "/var/lib/clickhouse/disks/gcs/"
         keeper_server:
+          # The operator's own base config unconditionally sets snapshot_storage_path
+          # (legacy, local), which Keeper prioritizes over snapshot_storage_disk when both
+          # are present. Remove it here so the disk-based setting below actually takes effect.
+          snapshot_storage_path:
+            "@remove": "remove"
           # Only snapshots go to GCS: log_storage_disk/state_storage_disk stay on the local
           # PVC disk (the default) since Keeper's write-ahead log relies on force_sync, which
           # only `local` disks support reliably.
