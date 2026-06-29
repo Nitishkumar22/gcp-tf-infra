@@ -12,7 +12,6 @@ clickhouse:
         secret:
           key: "CLICKHOUSE_PASSWORD"
           name: "clickhouse-secrets"
-      # MergeTree data lives in GCS, not the PVC below — see infra/gcs for the bucket/HMAC key.
       extraConfig:
         storage_configuration:
           disks:
@@ -29,8 +28,6 @@ clickhouse:
               volumes:
                 main:
                   disk: gcs
-        merge_tree:
-          storage_policy: "gcs_policy"  # default storage policy for every MergeTree table
     replicas: 1
     shards: 1
     containerTemplate:
@@ -53,13 +50,24 @@ clickhouse:
         limits:
           memory: "1Gi"
           cpu: "500m"
+      # Defaults (delay=60s, period=5s, failureThreshold=10) didn't give enough headroom for
+      # startup to finish reloading local system-table parts; operator was killing the
+      # container mid-load and causing a restart loop.
+      livenessProbe:
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        failureThreshold: 30
+      readinessProbe:
+        initialDelaySeconds: 30
+        periodSeconds: 5
+        failureThreshold: 30
     dataVolumeClaimSpec:  # now only backs local disk metadata/system tables, not table data
       storageClassName: "standard-rwo"
       accessModes:
       - "ReadWriteOnce"
       resources:
         requests:
-          storage: "2Gi"
+          storage: "10Gi"
     podTemplate:
       topologySpreadConstraints:  # spreads replicas across zones for AZ-failure resilience
       - maxSkew: 1
