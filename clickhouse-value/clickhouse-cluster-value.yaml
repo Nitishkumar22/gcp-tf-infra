@@ -45,11 +45,11 @@ clickhouse:
               key: gcs-hmac-secret
       resources:
         requests:
-          memory: "512Mi"
-          cpu: "100m"
+          memory: "2Gi"
+          cpu: "250m"
         limits:
-          memory: "1Gi"
-          cpu: "500m"
+          memory: "4Gi"
+          cpu: "1"
       # Defaults (delay=60s, period=5s, failureThreshold=10) didn't give enough headroom for
       # startup to finish reloading local system-table parts; operator was killing the
       # container mid-load and causing a restart loop.
