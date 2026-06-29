@@ -17,7 +17,7 @@ clickhouse:
           disks:
             gcs:
               type: s3  # ClickHouse has no native "gcs" disk; it talks to GCS via its S3-compatible endpoint
-              endpoint: "https://storage.googleapis.com/cinemates-clickhouse-data/clickhouse/"
+              endpoint: "https://storage.googleapis.com/cinemates-clickhouse-data/test/"
               access_key_id:
                 "@from_env": "GCS_HMAC_ACCESS_ID"  # pulled from env, not hardcoded in plaintext
               secret_access_key:
